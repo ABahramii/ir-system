@@ -17,8 +17,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Indexer {
+    private static final Logger logger = Logger.getLogger("indexer");
+
     private final Path indexDirectory;
     private final Path docsDirectory;
     private Properties props;
@@ -84,13 +88,15 @@ public class Indexer {
                     )
             );
 
-            System.out.println("adding " + filePath);
+            logger.log(Level.INFO, "adding {0}", filePath);
             writer.addDocument(doc);
         }
     }
 
     private void loadDocProperties() throws IOException {
         props = new Properties();
-        props.load(new FileInputStream(docsDirectory.toString() + "/doc.properties"));
+        try (FileInputStream fileInputStream = new FileInputStream(docsDirectory.toString() + "/doc.properties")) {
+            props.load(fileInputStream);
+        }
     }
 }
